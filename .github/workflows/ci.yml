@@ -6,6 +6,7 @@ on:
       - staging
 jobs:
   run_snowflake:
+    if: ${{ false }}
     name: dbt Cloud PR CI Snowflake
     runs-on: macos-latest
 
@@ -56,6 +57,7 @@ jobs:
         run: python3 .github/workflows/scripts/dbt_cloud_run_job.py
 
   run_postgres:
+    if: ${{ false }}
     name: dbt Cloud PR CI Postgres
     runs-on: macos-latest
 

@@ -11,7 +11,7 @@ renamed as (
     select
 
         ----------  ids
-        id as order_id,
+        id, 
         store_id as location_id,
         customer as customer_id,
 

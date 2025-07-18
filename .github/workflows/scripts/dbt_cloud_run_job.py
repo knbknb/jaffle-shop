@@ -58,26 +58,26 @@ def run_job(
     branch: str | None = None,
     schema_override: str | None = None,
 ) -> int:
-    """
-    Runs a dbt job
-    """
-
     # build payload
     req_payload = {"cause": cause}
-    if branch and not branch.startswith(
-        "$("
-    ):  # starts with '$(' indicates a valid branch name was not provided
+    if branch and not branch.startswith("$("):
         req_payload["git_branch"] = branch.replace("refs/heads/", "")
     if schema_override:
-        req_payload["schema_override"] = schema_override.replace("-", "_").replace(
-            "/", "_"
-        )
+        req_payload["schema_override"] = schema_override.replace("-", "_").replace("/", "_")
 
     # trigger job
     print(f"Triggering job:\n\turl: {url}\n\tpayload: {req_payload}")
 
     response = requests.post(url, headers=headers, json=req_payload)
-    run_id: int = response.json()["data"]["id"]
+    try:
+        resp_json = response.json()
+    except Exception as e:
+        raise Exception(f"Failed to parse JSON from response: {response.text}") from e
+
+    if "data" not in resp_json or "id" not in resp_json.get("data", {}):
+        raise Exception(f"API response missing job run id: {resp_json}")
+
+    run_id: int = resp_json["data"]["id"]
     return run_id
 
 
